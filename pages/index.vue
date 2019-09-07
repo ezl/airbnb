@@ -109,13 +109,20 @@
   }
 </script>
 <style lang="scss">
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
   body {
     height: 100vh;
     overflow: hidden;
     font-family: roboto;
 
+
+
     .homePage {
-      background-image: url("https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80");
+      /* background-image: url("https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80"); */
+      background-image: url("https://images.unsplash.com/photo-1551516595-097a8d938ecd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1502&q=80");
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center center;
