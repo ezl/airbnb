@@ -12,7 +12,12 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+      }
     ]
   },
   /*
@@ -38,7 +43,38 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/vuetify'
   ],
+
+  vuetify: {
+    icons: {
+      iconfont: 'md'
+    },
+    theme: {
+      themes: {
+        light: {
+          primary: '#009688',
+          secondary: '#009688',
+          accent: '#009688',
+          error: '#FF5252',
+          info: '#2196F3',
+          success: '#4CAF50',
+          warning: '#FFC107',
+        },
+        dark: {
+          primary: '#009688',
+          secondary: '#009688',
+          accent: '#82B1FF',
+          error: '#FF5252',
+          info: '#2196F3',
+          success: '#4CAF50',
+          warning: '#FFC107',
+        }
+      }
+    }
+  },
+
+
   /*
   ** Build configuration
   */
@@ -46,7 +82,7 @@ export default {
     /*
     ** You can extend webpack config here
     */
-    extend (config, ctx) {
+    extend(config, ctx) {
     }
   }
 }
