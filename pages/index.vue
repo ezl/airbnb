@@ -1,6 +1,8 @@
 <template>
 
   <div class="homePage">
+
+    <!-- Search Box -->
     <div class="exploreBox">
 
       <!-- Header -->
@@ -9,10 +11,7 @@
       <div class="headerDescription">Discover entire homes and private rooms perfect for any trip.</div>
 
       <!-- Form -->
-      <v-form class="detailsForm" ref="form" v-model="valid">
-        <!-- Where -->
-        <v-text-field label="Where" outlined></v-text-field>
-
+      <v-form class="detailsForm" ref="form">
         <!-- Checkin Checkout -->
         <v-row>
           <!-- Checkin -->
@@ -20,10 +19,10 @@
             <v-menu v-model="checkinMenu" :close-on-content-click="false" transition="scale-transition" offset-y
               full-width max-width="290px" min-width="290px">
               <template v-slot:activator="{ on }">
-                <v-text-field v-model="checkoinDate" label="CHECK-IN" prepend-inner-icon="event" outlined readonly
+                <v-text-field v-model="checkinDate" label="CHECK-IN" prepend-inner-icon="event" outlined readonly
                   v-on="on"></v-text-field>
               </template>
-              <v-date-picker v-model="checkoinDate" no-title @input="checkinMenu = false"></v-date-picker>
+              <v-date-picker v-model="checkinDate" no-title @input="checkinMenu = false"></v-date-picker>
             </v-menu>
             </v-layout>
           </v-col>
@@ -41,23 +40,17 @@
           </v-col>
         </v-row>
 
-        <!-- Adults/Childrens -->
-        <v-row>
-          <!-- Adults -->
-          <v-col>
-            <v-select v-model="adults" :items="adultsList" item-text="label" item-value="value" label="Adults" outlined>
-            </v-select>
-          </v-col>
-          <!-- Childrens -->
-          <v-col>
-            <v-select v-model="childs" :items="childsList" item-text="label" item-value="value" label="Childs" outlined>
-            </v-select>
-          </v-col>
-        </v-row>
+        <v-combobox v-model="homeList" chips clearable label="Add listing ids here" multiple outlined>
+          <template v-slot:selection="{ attrs, item, select, selected }">
+            <v-chip v-bind="attrs" :input-value="selected" close @click="select" @click:close="removeListingItem(item)">
+              <strong>{{ item }}</strong>
+            </v-chip>
+          </template>
+        </v-combobox>
 
         <!-- Search Button -->
         <div class="searchBtnContainer">
-          <v-btn prepend-inner-icon="magnify" depressed x-large large>
+          <v-btn @click="search" prepend-inner-icon="magnify" depressed x-large large :loading="fetchingData">
             <v-icon left>mdi-magnify</v-icon>
             Search
           </v-btn>
@@ -65,15 +58,57 @@
 
       </v-form>
 
-
     </div>
+
+    <!-- Result Table -->
+    <div class="resultList">
+      <table class="resultTable" v-if="!fetchingData && Object.keys(resultList).length > 0">
+        <thead>
+          <tr>
+            <th>Listing Id</th>
+            <th v-for="(date, index) in headers" :key="index">
+              {{date}}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(data, listingId) in resultList">
+            <td>{{listingId}}</td>
+            <td v-for="(date, index1) in data" :key="index1">
+              Available: {{date.available}}
+              <br />
+              Price: {{date.price.local_price_formatted}}
+              <br />
+              Bookable: {{date.bookable}}
+              <br />
+              Checkin Allowed: {{date.available_for_checkin}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <v-snackbar v-model="showSnackbar" color="#B71C1C">
+      {{ errorMessage }}
+      <v-btn color="pink" text @click="showSnackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
+
   </div>
+
+
 
 </template>
 
 <script>
+  import axios from 'axios'
+  import moment from 'moment'
+
   export default {
     data: () => ({
+
+      homeList: ['19210591'],
 
       adults: null,
       adultsList: [{ value: 1, label: "1 adult" },
@@ -92,6 +127,7 @@
       { value: 14, label: "14 adults" },
       { value: 15, label: "15 adults" },
       { value: 16, label: "16 adults" }],
+
       childs: null,
       childsList: [{ value: 1, label: "1 child" },
       { value: 2, label: "2 childs" },
@@ -100,44 +136,144 @@
       { value: 5, label: "5 childs" },
       ],
 
-      checkoinDate: null,
+      // checkinDate: '2019-09-25',
+      checkinDate: null,
       checkinMenu: false,
 
+      // checkoutDate: '2019-09-29',
       checkoutDate: null,
-      checkoutMenu: false
-    })
+      checkoutMenu: false,
+
+      fetchingData: false,
+      showSnackbar: false,
+      errorMessage: false,
+      headers: [],
+      resultList: {}
+    }),
+    methods: {
+      async search() {
+
+
+        try {
+          // let url = 'https://www.airbnb.com/api/v2/homes_pdp_availability_calendar?currency=USD&key=d306zoyjsyarp7ifhu67rjxn52tv0t20&locale=en&listing_id=19210591&month=9&year=2019&count=12';
+
+          // Validate listing
+          if (this.homeList.length == 0) {
+            this.showSnackbar = true;
+            this.errorMessage = "Provide atleast one listing to check.";
+            return;
+          } else if (this.homeList.length > 10) {
+            this.showSnackbar = true;
+            this.errorMessage = "Max 10 listings are allowed to check.";
+            return;
+          }
+
+          // Validate start end date
+          let startDate = moment(this.checkinDate);
+          let endDate = moment(this.checkoutDate);
+          if (!startDate.isValid() || !startDate.isValid()) {
+            this.showSnackbar = true;
+            this.errorMessage = "Invalid check-in or check-out date.";
+            return;
+          } else if (startDate > endDate) {
+            this.showSnackbar = true;
+            this.errorMessage = "Start date can not be greater than end date.";
+            return;
+          } else if (startDate < moment()) {
+            this.showSnackbar = true;
+            this.errorMessage = "Please provide future date, past dates are not allowed.";
+            return;
+          }
+
+          this.fetchingData = true;
+          let params = {
+            "checkinMonth": startDate.get('month') + 1,
+            // "checkinMonth": 9,
+            "checkinYear": startDate.get('year'),
+            "listings": this.homeList
+          };
+
+          let url = 'https://vwx50cjyk0.execute-api.us-east-1.amazonaws.com/dev/search';
+          let response = (await axios(url, {
+            method: 'POST',
+            data: params,
+            // withCredentials: true
+          })).data;
+
+          let listWiseAvailablity = {};
+          let listingList = Object.keys(response);
+          for (var i = 0; i < listingList.length; i++) {
+            let listingId = listingList[i];
+            let availablityInfo = response[listingId].calendar_months;
+            listWiseAvailablity[listingId] = [];
+
+            for (var j = 0; j < availablityInfo.length; j++) {
+              let monthObject = availablityInfo[j];
+
+              // If year and months match, compare days.
+              console.log('comparing days for', monthObject.year, monthObject.month)
+              let dayList = monthObject.days;
+              for (var k = 0; k < dayList.length; k++) {
+                let dayObject = dayList[k];
+                let currentDate = moment(dayObject.date);
+                if (currentDate.isBetween(startDate, endDate) || currentDate.isSame(startDate) || currentDate.isSame(endDate)) {
+                  console.log('consider date', currentDate)
+                  listWiseAvailablity[listingId].push(dayObject);
+                }
+              }
+            }
+          }
+
+          // Build headers
+          let headers = [];
+          let diff = endDate.diff(startDate, 'days');
+          let dt = startDate.clone();
+          for (var i = 0; i <= diff; i++) {
+            headers.push(dt.format('YYYY-MM-DD'));
+            dt = dt.add(1, 'days');
+          }
+          this.headers = headers;
+
+          this.resultList = listWiseAvailablity;
+          this.fetchingData = false;
+          console.log('showing results');
+        } catch (err) {
+          console.log('failed', err, err.message, err.response);
+          this.fetchingData = false;
+        }
+      },
+
+      removeListingItem(item) {
+        this.homeList.splice(this.homeList.indexOf(item), 1)
+        this.homeList = [...this.homeList]
+      },
+    }
   }
 </script>
+
 <style lang="scss">
   ::-webkit-scrollbar {
     display: none;
   }
 
   body {
-    height: 100vh;
-    overflow: hidden;
     font-family: roboto;
 
-
-
     .homePage {
-      /* background-image: url("https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80"); */
       background-image: url("https://images.unsplash.com/photo-1551516595-097a8d938ecd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1502&q=80");
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center center;
       min-height: 100vh;
-      overflow: hidden;
+      padding-top: 10vh;
 
-      display: flex;
-      align-items: center;
-      /* justify-content: center; */
 
 
       .exploreBox {
-        margin-left: 10%;
-        width: 500px;
+        width: 80%;
         padding: 25px;
+        opacity: 0.94;
+        margin: auto;
 
         background: white;
         border-radius: 3px;
@@ -171,6 +307,34 @@
         }
 
       }
+
+      .resultList {
+        max-width: 80%;
+        margin: auto;
+        margin-top: 5vh;
+        opacity: 0.94;
+        overflow-x: scroll;
+
+        background: white;
+        border-radius: 3px;
+
+        .resultTable {
+          border-collapse: collapse;
+
+          th,
+          td {
+            border: 1px solid #ddd;
+            border-collapse: none;
+            padding: 5px 3px 5px 5px;
+            line-height: 25px;
+            text-align: left;
+            min-width: 200px;
+          }
+        }
+
+      }
+
     }
+
   }
 </style>
