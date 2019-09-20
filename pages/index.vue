@@ -130,12 +130,12 @@ export default {
       { value: 5, label: "5 childs" }
     ],
 
-    checkinDate: "2019-09-25",
-    // checkinDate: null,
+    // checkinDate: "2019-09-25",
+    checkinDate: null,
     checkinMenu: false,
 
-    checkoutDate: "2019-09-29",
-    // checkoutDate: null,
+    // checkoutDate: "2019-09-29",
+    checkoutDate: null,
     checkoutMenu: false,
 
     fetchingData: false,
