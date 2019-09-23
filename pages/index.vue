@@ -97,9 +97,7 @@ import moment from "moment";
 
 export default {
   data: () => ({
-    homeList: [
-      "https://www.airbnb.co.in/rooms/16420029?toddlers=0&adults=1&check_in=2019-09-19&check_out=2019-09-27&source_impression_id=p3_1568899349_r6SymJA8duQO2mg5"
-    ],
+    homeList: ["https://www.airbnb.co.in/rooms/16420029"],
 
     adults: null,
     adultsList: [
@@ -241,7 +239,7 @@ export default {
         let diff = endDate.diff(startDate, "days");
         let dt = startDate.clone();
         for (var i = 0; i <= diff; i++) {
-          headers.push(dt.format("YYYY-MM-DD"));
+          headers.push(dt.format("MM-DD"));
           dt = dt.add(1, "days");
         }
         this.headers = headers;
@@ -259,6 +257,16 @@ export default {
       this.homeList.splice(this.homeList.indexOf(item), 1);
       this.homeList = [...this.homeList];
     }
+  },
+  mounted() {
+    this.checkinDate = moment()
+      .startOf("day")
+      .add(1, "days")
+      .format("YYYY-MM-DD");
+    this.checkoutDate = moment()
+      .startOf("day")
+      .add(15, "days")
+      .format("YYYY-MM-DD");
   }
 };
 </script>
@@ -336,17 +344,17 @@ body {
           padding: 5px 3px 5px 5px;
           line-height: 25px;
           text-align: left;
-          min-width: 200px;
+          min-width: 60px;
         }
 
         .failure {
           color: white;
-          background: red;
+          background: #ff5a5f;
         }
 
         .success {
-          background: green;
-          // color: white;
+          background: #1c797b;
+          color: white;
         }
       }
     }
