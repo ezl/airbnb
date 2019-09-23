@@ -6,9 +6,9 @@
     <div class="exploreBox">
 
       <!-- Header -->
-      <h1 class="boxHeader">Find places to stay on Airbnb</h1>
+      <h1 class="boxHeader">Combine Multiple Airbnb's For A Longer Stay</h1>
 
-      <div class="headerDescription">Discover entire homes and private rooms perfect for any trip.</div>
+      <div class="headerDescription">If you can't find one place that's available for your whole trip, add several to see overlapping availability.</div>
 
       <!-- Form -->
       <v-form class="detailsForm" ref="form">
@@ -36,7 +36,7 @@
           </v-col>
         </v-row>
 
-        <v-combobox v-model="homeList" chips clearable label="Add listing ids here" multiple outlined>
+        <v-combobox v-model="homeList" chips clearable label="Add Airbnb listing URLs here" multiple outlined>
           <template v-slot:selection="{ attrs, item, select, selected }">
             <v-chip v-bind="attrs" :input-value="selected" close @click="select" @click:close="removeListingItem(item)">
               <strong>{{ item }}</strong>
