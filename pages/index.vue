@@ -97,7 +97,7 @@ import moment from "moment";
 
 export default {
   data: () => ({
-    homeList: ["https://www.airbnb.co.in/rooms/16420029"],
+    homeList: ["https://www.airbnb.com/rooms/16420029"],
 
     adults: null,
     adultsList: [
