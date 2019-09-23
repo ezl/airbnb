@@ -350,6 +350,7 @@ body {
         .failure {
           color: white;
           background: #ff5a5f;
+          text-decoration: line-through;
         }
 
         .success {
