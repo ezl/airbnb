@@ -161,16 +161,16 @@ export default {
         let endDate = moment(this.checkoutDate);
         if (!startDate.isValid() || !startDate.isValid()) {
           this.showSnackbar = true;
-          this.errorMessage = "Invalid check-in or check-out date.";
+          this.errorMessage = "Hmmm... Invalid check-in or check-out date.";
           return;
         } else if (startDate > endDate) {
           this.showSnackbar = true;
-          this.errorMessage = "Start date can not be greater than end date.";
+          this.errorMessage = "Uh oh! Your start date can not be after your end date.";
           return;
         } else if (startDate < moment()) {
           this.showSnackbar = true;
           this.errorMessage =
-            "Please provide future date, current or past dates are not allowed.";
+            "Please provide a date in the future, current or past dates are not allowed.";
           return;
         }
 
