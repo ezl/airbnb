@@ -6,7 +6,7 @@
     <div class="exploreBox">
 
       <!-- Header -->
-      <h1 class="boxHeader">Combine Multiple Airbnb's For A Longer Stay</h1>
+      <h1 class="boxHeader">Combine Multiple Airbnb Stays</h1>
 
       <div class="headerDescription">If you can't find one place that's available for your whole trip, add several to see overlapping availability.</div>
 
