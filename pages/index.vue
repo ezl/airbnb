@@ -148,7 +148,7 @@ export default {
         // Validate listing
         if (this.homeList.length == 0) {
           this.showSnackbar = true;
-          this.errorMessage = "Provide atleast one listing to check.";
+          this.errorMessage = "Provide at least one listing to check.";
           return;
         } else if (this.homeList.length > 10) {
           this.showSnackbar = true;
