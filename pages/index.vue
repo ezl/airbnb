@@ -58,22 +58,30 @@
 
     <!-- Result Table -->
     <div class="resultList">
-      <table class="resultTable" v-if="!fetchingData && Object.keys(resultList).length > 0">
+      <table class="resultTable" v-if="!fetchingData && resultList != null && Object.keys(resultList).length > 0">
         <thead>
           <tr>
-            <th>Listing Id</th>
-            <th v-for="(date, index) in headers" :key="index">
-              {{date}}
+            <th width="300">Listing
+              <v-icon v-if="orderAscending" @click="OnChangeOrder()">arrow_upward</v-icon>
+              <v-icon v-if="!orderAscending" @click="OnChangeOrder()">arrow_downward</v-icon>
+              <!-- <i class="material-icons">
+                arrow_downward
+              </i> -->
+            </th>
+            <th v-for="(headerObj, index) in headers" :key="index">
+              {{headerObj.text}}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(data, listingId) in resultList">
+          <tr v-for="(rowObj, index) in resultList" :key="index">
             <td>
-              <a :href="data.url">{{listingId}}</a>
+              <a target="_blank" :href="'https://airbnb.com/rooms/' + rowObj.url">{{rowObj.name}}</a>
+
+              <v-icon @click="resultList.splice(index, 1)">delete</v-icon>
             </td>
-            <td v-for="(date, index1) in data.dayList" :key="index1" v-bind:class="{'success': date.available, 'failure': !date.available}">
-              {{date.price.local_price_formatted}}
+            <td v-for="(date, index1) in rowObj.data" :key="index1" v-bind:class="{'success': date.available, 'failure': !date.available}">
+              {{date.price}}
             </td>
           </tr>
         </tbody>
@@ -94,10 +102,15 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import _ from "lodash";
 
 export default {
   data: () => ({
-    homeList: ["https://www.airbnb.co.in/rooms/16420029"],
+    homeList: [
+      "https://www.airbnb.co.in/rooms/16420029",
+      "https://www.airbnb.co.in/rooms/27114500"
+    ],
+    orderAscending: true,
 
     adults: null,
     adultsList: [
@@ -140,7 +153,7 @@ export default {
     showSnackbar: false,
     errorMessage: false,
     headers: [],
-    resultList: {}
+    resultList: null
   }),
   methods: {
     async search() {
@@ -191,6 +204,7 @@ export default {
           listings: lst
         };
 
+        // Fetch data from api.
         let url =
           "https://vwx50cjyk0.execute-api.us-east-1.amazonaws.com/dev/search";
         let response = (await axios(url, {
@@ -199,15 +213,33 @@ export default {
           // withCredentials: true
         })).data;
 
-        let listWiseAvailablity = {};
+        // Build Headers
+        let headers = [];
+        let diff = endDate.diff(startDate, "days");
+        let dt = startDate.clone();
+        for (var i = 0; i <= diff; i++) {
+          // headers.push(dt.format("MM-DD"));
+          headers.push({
+            text: dt.format("MM-DD"),
+            align: "left",
+            sortable: false,
+            value: dt.format("MM-DD")
+          });
+          dt = dt.add(1, "days");
+        }
+        this.headers = headers;
+
+        let listWiseAvailablity = [];
         let listingList = Object.keys(response);
         for (var i = 0; i < listingList.length; i++) {
           let listingId = listingList[i];
-          let availablityInfo = response[listingId].calendar_months;
-          listWiseAvailablity[listingId] = {
-            url: listUrlMap[listingId],
-            dayList: []
-          };
+          let availablityInfo = response[listingId].availablity.calendar_months;
+          let listingName = response[listingId].name;
+
+          let rowObject = {};
+          rowObject["name"] = listingName.split("-")[0];
+          rowObject["url"] = listingId;
+          rowObject["data"] = [];
 
           for (var j = 0; j < availablityInfo.length; j++) {
             let monthObject = availablityInfo[j];
@@ -228,21 +260,18 @@ export default {
                 currentDate.isSame(endDate)
               ) {
                 console.log("consider date", currentDate);
-                listWiseAvailablity[listingId].dayList.push(dayObject);
+                // listWiseAvailablity[listingId].dayList.push(dayObject);
+                let dateStr = currentDate.format("MM-DD");
+                rowObject["data"].push({
+                  available: dayObject.available,
+                  price: dayObject.price.local_price_formatted
+                });
               }
             }
           }
-        }
 
-        // Build headers
-        let headers = [];
-        let diff = endDate.diff(startDate, "days");
-        let dt = startDate.clone();
-        for (var i = 0; i <= diff; i++) {
-          headers.push(dt.format("MM-DD"));
-          dt = dt.add(1, "days");
+          listWiseAvailablity.push(rowObject);
         }
-        this.headers = headers;
 
         this.resultList = listWiseAvailablity;
         this.fetchingData = false;
@@ -251,6 +280,12 @@ export default {
         console.log("failed", err, err.message, err.response);
         this.fetchingData = false;
       }
+    },
+
+    OnChangeOrder() {
+      debugger;
+      this.orderAscending = !this.orderAscending;
+      this.resultList = _.orderBy(this.resultList, ["name"], ["asc"]);
     },
 
     removeListingItem(item) {
@@ -286,6 +321,7 @@ body {
     background-position: center center;
     min-height: 100vh;
     padding-top: 10vh;
+    padding-bottom: 5vh;
 
     .exploreBox {
       width: 80%;
@@ -339,8 +375,8 @@ body {
 
         th,
         td {
-          border: 1px solid #ddd;
-          border-collapse: none;
+          // border: 1px solid #ddd;
+          // border-collapse: none;
           padding: 5px 3px 5px 5px;
           line-height: 25px;
           text-align: left;
@@ -356,6 +392,10 @@ body {
           background: #1c797b;
           color: white;
         }
+      }
+
+      .v-data-footer {
+        display: none !important;
       }
     }
   }
