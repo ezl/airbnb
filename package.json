@@ -1,8 +1,8 @@
 {
-  "name": "loginPage",
+  "name": "multiple-airbnb-viewer",
   "version": "1.0.0",
-  "description": "My stellar Nuxt.js project",
-  "author": "rockstar123",
+  "description": "Multiple Airbnb Listing Availability Viewer",
+  "author": "Eric",
   "private": true,
   "scripts": {
     "dev": "nuxt",

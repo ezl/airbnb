@@ -6,9 +6,9 @@
     <div class="exploreBox">
 
       <!-- Header -->
-      <h1 class="boxHeader">Find places to stay on Airbnb</h1>
+      <h1 class="boxHeader">Combine Multiple Airbnb Stays</h1>
 
-      <div class="headerDescription">Discover entire homes and private rooms perfect for any trip.</div>
+      <div class="headerDescription">If you can't find one place that's available for your whole trip, add several to see overlapping availability.</div>
 
       <!-- Form -->
       <v-form class="detailsForm" ref="form">
@@ -36,7 +36,7 @@
           </v-col>
         </v-row>
 
-        <v-combobox v-model="homeList" chips clearable label="Add listing ids here" multiple outlined>
+        <v-combobox v-model="homeList" chips clearable label="Add Airbnb listing URLs here" multiple outlined>
           <template v-slot:selection="{ attrs, item, select, selected }">
             <v-chip v-bind="attrs" :input-value="selected" close @click="select" @click:close="removeListingItem(item)">
               <strong>{{ item }}</strong>
@@ -106,11 +106,7 @@ import _ from "lodash";
 
 export default {
   data: () => ({
-    homeList: [
-      "https://www.airbnb.co.in/rooms/16420029",
-      "https://www.airbnb.co.in/rooms/27114500"
-    ],
-    orderAscending: true,
+    homeList: ["https://www.airbnb.com/rooms/16420029"],
 
     adults: null,
     adultsList: [
@@ -161,7 +157,7 @@ export default {
         // Validate listing
         if (this.homeList.length == 0) {
           this.showSnackbar = true;
-          this.errorMessage = "Provide atleast one listing to check.";
+          this.errorMessage = "Provide at least one listing to check.";
           return;
         } else if (this.homeList.length > 10) {
           this.showSnackbar = true;
@@ -174,16 +170,17 @@ export default {
         let endDate = moment(this.checkoutDate);
         if (!startDate.isValid() || !startDate.isValid()) {
           this.showSnackbar = true;
-          this.errorMessage = "Invalid check-in or check-out date.";
+          this.errorMessage = "Hmmm... Invalid check-in or check-out date.";
           return;
         } else if (startDate > endDate) {
           this.showSnackbar = true;
-          this.errorMessage = "Start date can not be greater than end date.";
+          this.errorMessage =
+            "Uh oh! Your start date can not be after your end date.";
           return;
         } else if (startDate < moment()) {
           this.showSnackbar = true;
           this.errorMessage =
-            "Please provide future date, current or past dates are not allowed.";
+            "Please provide a date in the future, current or past dates are not allowed.";
           return;
         }
 
@@ -386,6 +383,7 @@ body {
         .failure {
           color: white;
           background: #ff5a5f;
+          text-decoration: line-through;
         }
 
         .success {
