@@ -16,7 +16,7 @@
         <v-row>
           <!-- Checkin -->
           <v-col>
-            <v-menu v-model="checkinMenu" :close-on-content-click="false" transition="scale-transition" offset-y full-width max-width="290px" min-width="290px">
+            <v-menu v-model="checkinMenu" :close-on-content-click="false" transition="scale-transition" offset-y max-width="290px" min-width="290px">
               <template v-slot:activator="{ on }">
                 <v-text-field v-model="checkinDate" label="CHECK-IN" prepend-inner-icon="event" outlined readonly v-on="on"></v-text-field>
               </template>
@@ -26,7 +26,7 @@
           </v-col>
           <!-- Checkout -->
           <v-col>
-            <v-menu v-model="checkoutMenu" :close-on-content-click="false" transition="scale-transition" offset-y full-width max-width="290px" min-width="290px">
+            <v-menu v-model="checkoutMenu" :close-on-content-click="false" transition="scale-transition" offset-y max-width="290px" min-width="290px">
               <template v-slot:activator="{ on }">
                 <v-text-field v-model="checkoutDate" label="CHECK-OUT" prepend-inner-icon="event" outlined readonly v-on="on"></v-text-field>
               </template>
