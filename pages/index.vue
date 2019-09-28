@@ -242,11 +242,14 @@ export default {
             let monthObject = availablityInfo[j];
 
             // If year and months match, compare days.
+            /*
             console.log(
               "comparing days for",
               monthObject.year,
               monthObject.month
             );
+            */
+
             let dayList = monthObject.days;
             for (var k = 0; k < dayList.length; k++) {
               let dayObject = dayList[k];
@@ -256,7 +259,7 @@ export default {
                 currentDate.isSame(startDate) ||
                 currentDate.isSame(endDate)
               ) {
-                console.log("consider date", currentDate);
+                // console.log("consider date", currentDate);
                 // listWiseAvailablity[listingId].dayList.push(dayObject);
                 let dateStr = currentDate.format("MM-DD");
                 rowObject["data"].push({
