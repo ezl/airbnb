@@ -294,6 +294,7 @@ export default {
     }
   },
   mounted() {
+    this.orderAscending = true;
     this.checkinDate = moment()
       .startOf("day")
       .add(1, "days")
