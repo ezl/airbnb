@@ -185,11 +185,13 @@ export default {
 
       for (let i = 0; i < homeListArray.length; i++) {
         if (this.isValidListingUrl(homeListArray[i])) {
+          console.log(homeListArray[i], "is a valid url")
           let ddd = new URL(homeListArray[i]);
           let id = ddd.pathname.replace("/rooms/", "");
-          console.log("AAA")
-          console.log(this.listingIds)
-          this.listingIds.push(id);
+
+          if (this.listingIds.indexOf(id) === -1) {
+            this.listingIds.push(id);
+          }
         }
       }
 
