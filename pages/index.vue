@@ -174,7 +174,7 @@ export default {
 
     cleanListingUrl(url) {
       console.log("cleaning url", url);
-      return url;
+      return url.split("?")[0];
     },
 
     onTextAreaChange() {
