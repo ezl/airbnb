@@ -330,9 +330,11 @@ export default {
     },
     checkinDate(newValue) {
       localStorage.checkinDate= newValue;
+      this.renderTable();
     },
     checkoutDate(newValue) {
       localStorage.checkoutDate= newValue;
+      this.renderTable();
     }
   },
 
