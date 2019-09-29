@@ -211,11 +211,13 @@ export default {
         this.checkinDate = this.checkoutDate
         this.checkoutDate = newCheckOutDate
         return this.renderTable();
-      } else if (startDate < moment()) {
+      } else if (startDate < moment().startOf("day")) {
         this.showSnackbar = true;
         this.errorMessage =
-          "Please provide a date in the future, current or past dates are not allowed.";
-        return;
+          "You used a start date in the past, so we updated your search to start today.";
+        this.checkinDate = moment()
+          .startOf("day")
+          .format("YYYY-MM-DD");
       }
 
       try {
