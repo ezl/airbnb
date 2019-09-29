@@ -36,7 +36,7 @@
           </v-col>
         </v-row>
 
-        <v-combobox v-model="homeList" chips clearable label="Add Airbnb listing URLs here" multiple outlined>
+        <v-combobox v-model="homeList" v-on:change="onTextAreaChange" chips clearable label="Add Airbnb listing URLs here" multiple outlined>
           <template v-slot:selection="{ attrs, item, select, selected }">
             <v-chip v-bind="attrs" :input-value="selected" close @click="select" @click:close="removeListingItem(item)">
               <strong>{{ item }}</strong>
@@ -151,6 +151,45 @@ export default {
     resultList: null
   }),
   methods: {
+    isValidListingUrl(url) {
+      console.log("checking:", url)
+      try {
+        let ddd = new URL(url);
+        let isAirBnB = ddd.hostname.indexOf("airbnb") !== -1;
+        let isRoom= ddd.pathname.indexOf("rooms") !== -1;
+        if (isAirBnB === false || isRoom === false) {
+          console.log('values', isAirBnB, isRoom);
+          throw "Invalid AirBnB listing link."
+        }
+      } catch (err) {
+        console.log("failed", err, err.message, err.response);
+
+        this.showSnackbar = true;
+        this.errorMessage = '"' + url + '"' + " doesn't seem to be a valid AirBnB listing link.";
+        return false;
+      }
+
+      return true;
+    },
+
+    cleanListingUrl(url) {
+      console.log("cleaning url", url);
+      return url;
+    },
+
+    onTextAreaChange() {
+      console.log("textarea changed");
+      console.log(this.homeList);
+      this.homeList.forEach(function(item) {
+        if (this.isValidListingUrl(item)) {
+          console.log("url is valid:", item);
+        } else {
+          console.log("invalid url:", item);
+          this.removeListingItem(item)
+        }
+      }, this);
+    },
+
     async search() {
       try {
         // Validate listing
