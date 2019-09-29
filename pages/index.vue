@@ -207,10 +207,10 @@ export default {
         this.errorMessage = "Hmmm... Invalid check-in or check-out date.";
         return;
       } else if (startDate > endDate) {
-        this.showSnackbar = true;
-        this.errorMessage =
-          "Uh oh! Your start date can not be after your end date.";
-        return;
+        let newCheckOutDate = this.checkinDate;
+        this.checkinDate = this.checkoutDate
+        this.checkoutDate = newCheckOutDate
+        return this.renderTable();
       } else if (startDate < moment()) {
         this.showSnackbar = true;
         this.errorMessage =
