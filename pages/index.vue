@@ -36,14 +36,14 @@
           </v-col>
         </v-row>
 
-        <v-textarea v-model="homeList" label="Add Airbnb listing URLs here" outlined>
+        <v-textarea :disabled="fetchingData" v-model="homeList" label="Add Airbnb listing URLs here" outlined>
         </v-textarea>
 
         <!-- Search Button -->
         <div class="searchBtnContainer">
           <v-btn @click="search" prepend-inner-icon="magnify" depressed x-large large :loading="fetchingData">
-            <v-icon left>mdi-magnify</v-icon>
-            Search
+            <v-icon left>mdi-plus-circle-outline</v-icon>
+            Add Listings
           </v-btn>
         </div>
 
@@ -72,10 +72,11 @@
         <tbody>
           <tr v-for="(rowObj, index) in resultList" :key="index">
             <td>
-              <v-icon @click="resultList.splice(index, 1)">delete</v-icon>
+              <v-icon @click="removeListingItem(rowObj.listingId, index)">delete</v-icon>
+              id={{ rowObj.listingId }}
             </td>
             <td>
-              <a target="_blank" :href="'https://airbnb.com/rooms/' + rowObj.url">{{rowObj.name}}</a>
+              <a target="_blank" :href="'https://airbnb.com/rooms/' + rowObj.listingId">{{rowObj.name}}</a>
             </td>
             <td v-for="(date, index1) in rowObj.data" :key="index1" v-bind:class="{'success': date.available, 'failure': !date.available}">
               {{date.price}}
@@ -175,62 +176,53 @@ export default {
       return url.split("?")[0];
     },
 
-    onTextAreaChange() {
-      console.log("textarea changed");
-      console.log(this.homeList);
-      /*
-      this.homeList.forEach(function(item) {
-        if (this.isValidListingUrl(item)) {
-          console.log("url is valid:", item);
-        } else {
-          console.log("invalid url:", item);
-          this.removeListingItem(item)
+    search() {
+      // Validate listing
+      if (this.homeList.length == 0) {
+        this.showSnackbar = true;
+        this.errorMessage = "Provide at least one listing to check.";
+        return;
+      }
+
+      let homeListArray = this.homeList.split('\n');
+
+          console.log("XXX")
+          console.log(this.listingIds)
+
+      for (let i = 0; i < homeListArray.length; i++) {
+        if (this.isValidListingUrl(homeListArray[i])) {
+          let ddd = new URL(homeListArray[i]);
+          let id = ddd.pathname.replace("/rooms/", "");
+          console.log("AAA")
+          console.log(this.listingIds)
+          this.listingIds.push(id);
         }
-      }, this);
-      */
+      }
+
+      this.renderTable();
     },
 
-    async search() {
+    async renderTable() {
+      // Validate start end date
+      let startDate = moment(this.checkinDate);
+      let endDate = moment(this.checkoutDate);
+      if (!startDate.isValid() || !startDate.isValid()) {
+        this.showSnackbar = true;
+        this.errorMessage = "Hmmm... Invalid check-in or check-out date.";
+        return;
+      } else if (startDate > endDate) {
+        this.showSnackbar = true;
+        this.errorMessage =
+          "Uh oh! Your start date can not be after your end date.";
+        return;
+      } else if (startDate < moment()) {
+        this.showSnackbar = true;
+        this.errorMessage =
+          "Please provide a date in the future, current or past dates are not allowed.";
+        return;
+      }
+
       try {
-        // Validate listing
-        if (this.homeList.length == 0) {
-          this.showSnackbar = true;
-          this.errorMessage = "Provide at least one listing to check.";
-          return;
-        }
-
-        // Validate start end date
-        let startDate = moment(this.checkinDate);
-        let endDate = moment(this.checkoutDate);
-        if (!startDate.isValid() || !startDate.isValid()) {
-          this.showSnackbar = true;
-          this.errorMessage = "Hmmm... Invalid check-in or check-out date.";
-          return;
-        } else if (startDate > endDate) {
-          this.showSnackbar = true;
-          this.errorMessage =
-            "Uh oh! Your start date can not be after your end date.";
-          return;
-        } else if (startDate < moment()) {
-          this.showSnackbar = true;
-          this.errorMessage =
-            "Please provide a date in the future, current or past dates are not allowed.";
-          return;
-        }
-
-        let homeListArray = this.homeList.split('\n');
-        console.log("home list as array", homeListArray);
-        for (let i = 0; i < homeListArray.length; i++) {
-          if (this.isValidListingUrl(homeListArray[i])) {
-            let ddd = new URL(homeListArray[i]);
-            let id = ddd.pathname.replace("/rooms/", "");
-            this.listingIds.push(id);
-          } else {
-            //
-          }
-        }
-        console.log('success')
-
         this.fetchingData = true;
         let params = {
           checkinMonth: startDate.get("month") + 1,
@@ -273,7 +265,7 @@ export default {
 
           let rowObject = {};
           rowObject["name"] = listingName.split("-")[0];
-          rowObject["url"] = listingId;
+          rowObject["listingId"] = listingId;
           rowObject["data"] = [];
 
           for (var j = 0; j < availablityInfo.length; j++) {
@@ -327,24 +319,22 @@ export default {
       this.resultList = _.orderBy(this.resultList, ["name"], ["asc"]);
     },
 
-    removeListingItem(item) {
-      this.homeList.splice(this.homeList.indexOf(item), 1);
-      this.homeList = [...this.homeList];
-
+    removeListingItem(listingId, index) {
+      this.resultList.splice(index, 1)
+      this.listingIds.splice(this.listingIds.indexOf(listingId), 1);
+      this.listingIds = [...this.listingIds];
+      console.log("removing items", listingId)
     }
   },
 
   watch: {
     listingIds(newValue) {
       localStorage.listingIds = newValue;
+      console.log("local storage set")
     }
   },
 
   mounted() {
-    if (localStorage.listingIds) {
-      this.homeList = localStorage.listingIds;
-    }
-
     this.orderAscending = true;
     this.checkinDate = moment()
       .startOf("day")
@@ -354,6 +344,15 @@ export default {
       .startOf("day")
       .add(15, "days")
       .format("YYYY-MM-DD");
+
+    if (localStorage.listingIds) {
+      this.listingIds = localStorage.listingIds.split(',')
+      console.log("this.listingIds set from local storage:", this.listingIds)
+      this.renderTable();
+    } else {
+      console.log("listingids not set", localStorage.listingIds, this.listingIds)
+    }
+
   }
 };
 </script>
