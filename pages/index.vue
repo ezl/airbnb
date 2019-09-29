@@ -56,8 +56,7 @@
       <table class="resultTable" v-if="!fetchingData && resultList != null && Object.keys(resultList).length > 0">
         <thead>
           <tr>
-            <th><!-- delete column placeholder --></th>
-            <th width="300">Listing
+            <th>Listing
               <v-icon v-if="orderAscending" @click="OnChangeOrder()">arrow_upward</v-icon>
               <v-icon v-if="!orderAscending" @click="OnChangeOrder()">arrow_downward</v-icon>
               <!-- <i class="material-icons">
@@ -71,12 +70,10 @@
         </thead>
         <tbody>
           <tr v-for="(rowObj, index) in resultList" :key="index">
-            <td>
-              <v-icon @click="removeListingItem(rowObj.listingId, index)">delete</v-icon>
-              id={{ rowObj.listingId }}
-            </td>
-            <td>
+            <td class="listingName">
+              <v-icon small class="removeItem" @click="removeListingItem(rowObj.listingId, index)">mdi-close-circle-outline</v-icon>
               <a target="_blank" :href="'https://airbnb.com/rooms/' + rowObj.listingId">{{rowObj.name}}</a>
+              id={{ rowObj.listingId }}
             </td>
             <td v-for="(date, index1) in rowObj.data" :key="index1" v-bind:class="{'success': date.available, 'failure': !date.available}">
               {{date.price}}
@@ -421,8 +418,19 @@ body {
       background: white;
       border-radius: 3px;
 
+      .removeItem {
+        color: #CCC;
+      }
+
+      .removeItem:hover {
+        color: #ff5a5f;
+      }
+
       .resultTable {
         border-collapse: collapse;
+        .listingName {
+          min-width: 250px;
+        }
 
         th,
         td {
