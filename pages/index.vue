@@ -36,13 +36,8 @@
           </v-col>
         </v-row>
 
-        <v-combobox v-model="homeList" v-on:change="onTextAreaChange" chips clearable label="Add Airbnb listing URLs here" multiple outlined>
-          <template v-slot:selection="{ attrs, item, select, selected }">
-            <v-chip v-bind="attrs" :input-value="selected" close @click="select" @click:close="removeListingItem(item)">
-              <strong>{{ item }}</strong>
-            </v-chip>
-          </template>
-        </v-combobox>
+        <v-textarea v-model="homeList" label="Add Airbnb listing URLs here" outlined>
+        </v-textarea>
 
         <!-- Search Button -->
         <div class="searchBtnContainer">
@@ -108,7 +103,8 @@ import _ from "lodash";
 
 export default {
   data: () => ({
-    homeList: [],
+    homeList: '',
+    listingIds: [],
     adults: null,
     adultsList: [
       { value: 1, label: "1 adult" },
@@ -182,6 +178,7 @@ export default {
     onTextAreaChange() {
       console.log("textarea changed");
       console.log(this.homeList);
+      /*
       this.homeList.forEach(function(item) {
         if (this.isValidListingUrl(item)) {
           console.log("url is valid:", item);
@@ -190,6 +187,7 @@ export default {
           this.removeListingItem(item)
         }
       }, this);
+      */
     },
 
     async search() {
@@ -198,10 +196,6 @@ export default {
         if (this.homeList.length == 0) {
           this.showSnackbar = true;
           this.errorMessage = "Provide at least one listing to check.";
-          return;
-        } else if (this.homeList.length > 10) {
-          this.showSnackbar = true;
-          this.errorMessage = "Max 10 listings are allowed to check.";
           return;
         }
 
@@ -224,21 +218,25 @@ export default {
           return;
         }
 
-        let lst = [],
-          listUrlMap = {};
-        for (let i = 0; i < this.homeList.length; i++) {
-          let ddd = new URL(this.homeList[i]);
-          let id = ddd.pathname.replace("/rooms/", "");
-          listUrlMap[id] = this.homeList[i];
-          lst.push(id);
+        let homeListArray = this.homeList.split('\n');
+        console.log("home list as array", homeListArray);
+        for (let i = 0; i < homeListArray.length; i++) {
+          if (this.isValidListingUrl(homeListArray[i])) {
+            let ddd = new URL(homeListArray[i]);
+            let id = ddd.pathname.replace("/rooms/", "");
+            this.listingIds.push(id);
+          } else {
+            //
+          }
         }
+        console.log('success')
 
         this.fetchingData = true;
         let params = {
           checkinMonth: startDate.get("month") + 1,
           // "checkinMonth": 9,
           checkinYear: startDate.get("year"),
-          listings: lst
+          listings: this.listingIds
         };
 
         // Fetch data from api.
@@ -314,6 +312,7 @@ export default {
         }
 
         this.resultList = listWiseAvailablity;
+        this.homeList = '';
         this.fetchingData = false;
         console.log("showing results");
       } catch (err) {
@@ -336,17 +335,14 @@ export default {
   },
 
   watch: {
-    homeList(newValue) {
-      localStorage.homeList = newValue;
+    listingIds(newValue) {
+      localStorage.listingIds = newValue;
     }
   },
 
   mounted() {
-    if (localStorage.homeList) {
-      this.homeList = localStorage.homeList.split(",");
-    } else {
-      let defaultValue = ["https://www.airbnb.com/rooms/16420029"];
-      this.homeList = defaultValue;
+    if (localStorage.listingIds) {
+      this.homeList = localStorage.listingIds;
     }
 
     this.orderAscending = true;
