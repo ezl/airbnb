@@ -61,6 +61,7 @@
       <table class="resultTable" v-if="!fetchingData && resultList != null && Object.keys(resultList).length > 0">
         <thead>
           <tr>
+            <th><!-- delete column placeholder --></th>
             <th width="300">Listing
               <v-icon v-if="orderAscending" @click="OnChangeOrder()">arrow_upward</v-icon>
               <v-icon v-if="!orderAscending" @click="OnChangeOrder()">arrow_downward</v-icon>
@@ -76,9 +77,10 @@
         <tbody>
           <tr v-for="(rowObj, index) in resultList" :key="index">
             <td>
-              <a target="_blank" :href="'https://airbnb.com/rooms/' + rowObj.url">{{rowObj.name}}</a>
-
               <v-icon @click="resultList.splice(index, 1)">delete</v-icon>
+            </td>
+            <td>
+              <a target="_blank" :href="'https://airbnb.com/rooms/' + rowObj.url">{{rowObj.name}}</a>
             </td>
             <td v-for="(date, index1) in rowObj.data" :key="index1" v-bind:class="{'success': date.available, 'failure': !date.available}">
               {{date.price}}
