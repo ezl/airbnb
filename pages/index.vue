@@ -36,12 +36,12 @@
           </v-col>
         </v-row>
 
-        <v-textarea :disabled="fetchingData" v-model="homeList" label="Add Airbnb listing URLs here" outlined>
+        <v-textarea :disabled="fetchingData" v-model="homeList" label="Add Airbnb listing URLs here (one link per line)" outlined>
         </v-textarea>
 
         <!-- Search Button -->
         <div class="searchBtnContainer">
-          <v-btn @click="search" prepend-inner-icon="magnify" depressed x-large large :loading="fetchingData">
+          <v-btn @click="search" depressed :loading="fetchingData">
             <v-icon left>mdi-plus-circle-outline</v-icon>
             Add Listings
           </v-btn>
