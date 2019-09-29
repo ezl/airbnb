@@ -202,7 +202,7 @@ export default {
       // Validate start end date
       let startDate = moment(this.checkinDate);
       let endDate = moment(this.checkoutDate);
-      if (!startDate.isValid() || !startDate.isValid()) {
+      if (!startDate.isValid() || !endDate.isValid()) {
         this.showSnackbar = true;
         this.errorMessage = "Hmmm... Invalid check-in or check-out date.";
         return;
