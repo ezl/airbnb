@@ -106,8 +106,7 @@ import _ from "lodash";
 
 export default {
   data: () => ({
-    homeList: ["https://www.airbnb.com/rooms/16420029"],
-
+    homeList: [],
     adults: null,
     adultsList: [
       { value: 1, label: "1 adult" },
@@ -291,9 +290,24 @@ export default {
     removeListingItem(item) {
       this.homeList.splice(this.homeList.indexOf(item), 1);
       this.homeList = [...this.homeList];
+
     }
   },
+
+  watch: {
+    homeList(newValue) {
+      localStorage.homeList = newValue;
+    }
+  },
+
   mounted() {
+    if (localStorage.homeList) {
+      this.homeList = localStorage.homeList.split(",");
+    } else {
+      let defaultValue = ["https://www.airbnb.com/rooms/16420029"];
+      this.homeList = defaultValue;
+    }
+
     this.orderAscending = true;
     this.checkinDate = moment()
       .startOf("day")
