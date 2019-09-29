@@ -39,9 +39,9 @@
         <v-textarea :disabled="fetchingData" v-model="homeList" label="Add Airbnb listing URLs here (one link per line)" outlined>
         </v-textarea>
 
-        <!-- Search Button -->
+        <!-- Add Listings Button -->
         <div class="searchBtnContainer">
-          <v-btn @click="search" depressed :loading="fetchingData">
+          <v-btn @click="addListings" depressed :loading="fetchingData">
             <v-icon left>mdi-plus-circle-outline</v-icon>
             Add Listings
           </v-btn>
@@ -173,7 +173,7 @@ export default {
       return url.split("?")[0];
     },
 
-    search() {
+    addListings() {
       // Validate listing
       if (this.homeList.length == 0) {
         this.showSnackbar = true;
