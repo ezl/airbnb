@@ -327,19 +327,33 @@ export default {
     listingIds(newValue) {
       localStorage.listingIds = newValue;
       console.log("local storage set")
+    },
+    checkinDate(newValue) {
+      localStorage.checkinDate= newValue;
+    },
+    checkoutDate(newValue) {
+      localStorage.checkoutDate= newValue;
     }
   },
 
   mounted() {
     this.orderAscending = true;
-    this.checkinDate = moment()
-      .startOf("day")
-      .add(1, "days")
-      .format("YYYY-MM-DD");
-    this.checkoutDate = moment()
-      .startOf("day")
-      .add(15, "days")
-      .format("YYYY-MM-DD");
+
+    if (localStorage.checkinDate) {
+      // assume that if a check in date is stored, then a check out date is stored
+      console.log(localStorage.checkinDate)
+      this.checkinDate = localStorage.checkinDate;
+      this.checkoutDate = localStorage.checkoutDate;
+    } else {
+      this.checkinDate = moment()
+        .startOf("day")
+        .add(1, "days")
+        .format("YYYY-MM-DD");
+      this.checkoutDate = moment()
+        .startOf("day")
+        .add(15, "days")
+        .format("YYYY-MM-DD");
+    }
 
     if (localStorage.listingIds) {
       this.listingIds = localStorage.listingIds.split(',')
