@@ -71,9 +71,9 @@
         <tbody>
           <tr v-for="(rowObj, index) in resultList" :key="index">
             <td class="listingName">
-              <v-icon small class="removeItem" @click="removeListingItem(rowObj.listingId, index)">mdi-close-circle-outline</v-icon>
               <a target="_blank" :href="'https://airbnb.com/rooms/' + rowObj.listingId">{{rowObj.name}}</a>
-              id={{ rowObj.listingId }}
+              <v-icon small class="removeItem" @click="removeListingItem(rowObj.listingId, index)">mdi-close-circle-outline</v-icon>
+              <p>id={{ rowObj.listingId }}</p>
             </td>
             <td v-for="(date, index1) in rowObj.data" :key="index1" v-bind:class="{'success': date.available, 'failure': !date.available}">
               {{date.price}}
@@ -182,9 +182,6 @@ export default {
       }
 
       let homeListArray = this.homeList.split('\n');
-
-          console.log("XXX")
-          console.log(this.listingIds)
 
       for (let i = 0; i < homeListArray.length; i++) {
         if (this.isValidListingUrl(homeListArray[i])) {
