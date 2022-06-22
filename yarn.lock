@@ -703,6 +703,11 @@
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
+"@mdi/js@^4.4.95":
+  version "4.9.95"
+  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-4.9.95.tgz#8984c2ac04c89913a3ff2bbe4d91f4ab51d8ef4f"
+  integrity sha512-6zKTCqZUCuDWJThdRcjdFTqp2BXfYwXI1UlYa68A1/kmCcy1ijpbpRbrJcUdZ+9WojencCh1DOGFqhj/x8I/eQ==
+
 "@nuxt/babel-preset-app@2.9.2":
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/@nuxt/babel-preset-app/-/babel-preset-app-2.9.2.tgz#e8d2ac841db845ef88ca2687093a95a480106e5d"
@@ -6111,9 +6116,9 @@ shebang-regex@^1.0.0:
   integrity sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
 
 shell-quote@^1.6.1:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.2.tgz#67a7d02c76c9da24f99d20808fcaded0e0e04be2"
-  integrity sha512-mRz/m/JVscCrkMyPqHc/bczi3OQHkLTqXHEFu0zDhK/qfv3UcOA4SVmRCLmos4bhjr9ekVQubj/R7waKapmiQg==
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.3.tgz#aa40edac170445b9a431e17bb62c0b881b9c4123"
+  integrity sha512-Vpfqwm4EnqGdlsBFNmHhxhElJYrdfcxPThu+ryKS5J8L/fhAwLazFZtq+S+TWZ9ANj2piSQLGj6NQg+lKPmxrw==
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
